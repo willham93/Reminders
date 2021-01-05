@@ -37,7 +37,7 @@ old_eAdd = ""
 old_msg = ""
 old_t = ""
 
-os.chdir(r'/home/william/Desktop/HDD/pythonprojects/reminder/local_server/static/')
+os.chdir(r'path/to/credentials/.json')
 ezgmail.init()
 
 
@@ -66,7 +66,7 @@ def readAndParseEmail():
 				 		old_eAdd = eAdd
 				 		old_msg = msg
 				 		old_name = name
-				 		with open('/home/william/Desktop/HDD/pythonprojects/reminder/local_server/reminders.csv',mode = 'a+') as reminders:
+				 		with open('/pathto/reminders.csv',mode = 'a+') as reminders:
 				 			writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
 				 			writer.writerow(txt)
 
@@ -76,7 +76,7 @@ def readAndParseEmail():
 def readAndSendReminders():
 	with lock:
 		lines = list()
-		with open('/home/william/Desktop/HDD/pythonprojects/reminder/local_server/reminders.csv',mode = 'r+') as reminders:
+		with open('/pathto/reminders.csv',mode = 'r+') as reminders:
 			reader = csv.reader(reminders,delimiter=",")
 
 
@@ -92,15 +92,10 @@ def readAndSendReminders():
 					body = row[2]
 					subject="Reminder for " + row[0]
 					ezgmail.send(receiver,subject,body)
-					# yagmail.register("pyemailer5547@gmail","hami0112358")
-					# yag = yagmail.SMTP("pyemailer5547@gmail.com","hami0112358")
-					# yag.send(
-				    # to=receiver,
-				    # subject="Reminder for " + row[0],
-				    # contents=body)
+				
 				else:
 					lines.append(row)
-		with open('/home/william/Desktop/HDD/pythonprojects/reminder/local_server/reminders.csv',mode = 'w') as reminders:
+		with open('/pathto/reminders.csv',mode = 'w') as reminders:
 			writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
 			writer.writerows(lines)
 			lines.clear()
@@ -137,7 +132,7 @@ def addReminder():
 			old_eAdd = eAdd
 			old_msg = msg
 			old_name = name
-			with open('/home/william/Desktop/HDD/pythonprojects/reminder/local_server/reminders.csv',mode = 'a+') as reminders:
+			with open('/pathto/reminders.csv',mode = 'a+') as reminders:
 				writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
 				writer.writerow(txt)
 
