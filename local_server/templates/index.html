@@ -1,0 +1,60 @@
+<html>
+  <head>
+     <title>Reminders</title>
+     <style>
+       body{background-color: black;}
+       label{color: whitesmoke;}
+      *{padding: 2px 2px;
+        margin: 2px 2px; }
+      .container{
+          display: block;
+          text-align: center;
+          font-size: 45px;
+          color:whitesmoke;
+          
+          height: 50px;
+          max-width:1000px;
+        }
+      .title{
+	      text-align: center;
+	      font-size:45px;
+	      color: whitesmoke;
+	      }
+        body, html {
+    
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    display:table;
+}
+body {
+    display:table-cell;
+    vertical-align:middle;
+}
+form {
+    display:table;/* shrinks to fit conntent */
+    margin:auto;
+}
+     </style>
+  </head>
+  <body>
+    
+<div >
+    <h1 class="title" > Set Reminders</h1>
+</div>
+<div id = parent>
+<form id="chile"method='POST' action='' id ="myForm">
+  <label>Name: </label><input type = "text" name = "name"><br>
+  <label>Email: </label><input type = "text" name = "address"><br>
+  <label>Reminder message: </label> <input type = "text" name="reminder"><br>
+  <label>Date:</label> <input type="date" name="Date" /><br>
+  <label>Time: </label><input type="time"  name="tod"><br>
+  <input type="submit" value="Submit">
+  </form>
+
+
+</div>
+
+  </body>
+</html>
