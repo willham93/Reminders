@@ -7,9 +7,9 @@
 import csv
 import threading
 from datetime import datetime as dt
-import yagmail
+import mariadb
 import time
-
+import sys
 import ezgmail
 import os
 
@@ -23,7 +23,21 @@ from flask.wrappers import Request
 
 # initialize the output frame and a lock used to ensure thread-safe
 # exchanges of the output frames (useful for multiple browsers/tabs
+try: conn=mariadb.connect(
+    user="reminder",
+    password="hami5547",
+    host="127.0.0.1",
+    port=3306,
+    database="remindersdb")
+except mariadb.Error as e:
+    print(f"error connecting:{e}")
+    sys.exit(1)
+    
+cur = conn.cursor()
 
+cur.execute("SELECT * FROM Reminders WHERE name=?",("william",))
+for x in cur:
+    print(x)
 
 lock = threading.Lock()
 temp = time.time()
@@ -37,7 +51,7 @@ old_eAdd = ""
 old_msg = ""
 old_t = ""
 
-os.chdir(r'path/to/credentials/.json')
+os.chdir(r'/home/william/Desktop/HDD/pythonprojects/reminder/local_server/static')
 ezgmail.init()
 
 
@@ -58,6 +72,7 @@ def readAndParseEmail():
 			 reminder = contents[2]
 			 date = contents[3]
 			 Time = contents[4]
+			 query = f"INSERT INTO Reminders (name,email_address,message,date,time) VALUES (\'{name}\',\'{eAdd}\',\'{reminder}\',\'{date}\',\'{Time}\')"
 			 txt = [name,eAdd,reminder,date,Time]
 			 if "new reminder" in t.messages[0].subject.lower():
 				 with lock:
@@ -66,9 +81,9 @@ def readAndParseEmail():
 				 		old_eAdd = eAdd
 				 		old_msg = msg
 				 		old_name = name
-				 		with open('/pathto/reminders.csv',mode = 'a+') as reminders:
-				 			writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
-				 			writer.writerow(txt)
+				 		cur.execute(query)
+						
+
 
 
 
@@ -76,29 +91,28 @@ def readAndParseEmail():
 def readAndSendReminders():
 	with lock:
 		lines = list()
-		with open('/pathto/reminders.csv',mode = 'r+') as reminders:
-			reader = csv.reader(reminders,delimiter=",")
+		now = dt.now()
+		now=now.strftime("%Y-%m-%d %H:%M")
+		t = now.split(' ')[1]
+		date = now.split(' ')[0]
+
+		cur.execute("SELECT * FROM Reminders where date=? AND time=?",
+                    (now.split(' ')[0],now.split(' ')[1]))
+		
+		for row in cur:
+			name = row[0].replace("'",'')
+			reciever = row[1].replace("'",'')
+			body=row[2].replace("'",'')
+			subject = "Reminder for " + name
+			ezgmail.send(reciever,subject,body)
+			query = f"DELETE FROM Reminders WHERE name='{name}' AND email_address='{reciever}' AND message='{body}' AND date='{date}' AND time='{t}'"
+			lines.append(query)
+		for line in lines:
+			cur.execute(line)
+			conn.commit()
 
 
-			now = dt.now()
 			
-			now=now.strftime("%Y-%m-%d %H:%M")
-			
-			for row in reader:
-
-				t = row[3] + " " + row[4]
-				if t == now:
-					receiver = row[1]
-					body = row[2]
-					subject="Reminder for " + row[0]
-					ezgmail.send(receiver,subject,body)
-				
-				else:
-					lines.append(row)
-		with open('/pathto/reminders.csv',mode = 'w') as reminders:
-			writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
-			writer.writerows(lines)
-			lines.clear()
 
 
 def threadFunction():
@@ -132,9 +146,10 @@ def addReminder():
 			old_eAdd = eAdd
 			old_msg = msg
 			old_name = name
-			with open('/pathto/reminders.csv',mode = 'a+') as reminders:
-				writer = csv.writer(reminders,delimiter = ',',quotechar='"', quoting = csv.QUOTE_MINIMAL)
-				writer.writerow(txt)
+			query = f"INSERT INTO Reminders (name,email_address,message,date,time) VALUES (\'{name}\',\'{eAdd}\',\'{msg}\',\'{date}\',\'{t}\')"
+			print(query)
+			cur.execute(query)
+			conn.commit()
 
 	return render_template("index.html")
 
