@@ -36,7 +36,7 @@ except mariadb.Error as e:
 
 cur = conn.cursor()
 temp = 0
-bot = telegram.Bot(token="1574500597:AAH0cU4EFdJzrwtxcgSpyy5MA1ijtoowPR4")
+bot = telegram.Bot(token="your token")
 # Enable logging
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
